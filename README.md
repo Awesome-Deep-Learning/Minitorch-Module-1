@@ -9,3 +9,5 @@
 This assignment requires the following files from the previous assignments.
 
         minitorch/operators.py minitorch/module.py tests/test_module.py tests/test_operators.py project/run_manual.py
+
+* Solution branch: https://github.com/Awesome-Deep-Learning/Minitorch-Module-1/tree/solution
