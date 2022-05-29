@@ -174,14 +174,14 @@ class Log(ScalarFunction):
 
 # To implement.
 
-
 class Mul(ScalarFunction):
     """Multiplication function"""
 
     @staticmethod
     def forward(ctx, a, b):
         ctx.save_for_backward(a, b)
-        return float(operators.mul(a, b))
+        # super usage ref: https://stackoverflow.com/questions/26788214/super-and-staticmethod-interaction
+        return super(Mul, Mul).data_type(operators.mul(a, b))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -195,7 +195,7 @@ class Inv(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         ctx.save_for_backward(a)
-        return float(operators.inv(a))
+        return super(Inv, Inv).data_type(operators.inv(a))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -208,7 +208,7 @@ class Neg(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a):
-        return float(operators.neg(a))
+        return super(Neg, Neg).data_type(operators.neg(a))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -222,7 +222,7 @@ class Sigmoid(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         ctx.save_for_backward(a)
-        return float(operators.sigmoid(a))
+        return super(Sigmoid, Sigmoid).data_type(operators.sigmoid(a))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -236,7 +236,7 @@ class ReLU(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         ctx.save_for_backward(a)
-        return float(operators.relu(a))
+        return super(ReLU, ReLU).data_type(operators.relu(a))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -250,7 +250,7 @@ class Exp(ScalarFunction):
     @staticmethod
     def forward(ctx, a):
         ctx.save_for_backward(a)
-        return float(operators.exp(a))
+        return super(Exp, Exp).data_type(operators.exp(a))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -263,7 +263,7 @@ class LT(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a, b):
-        return float(operators.lt(a, b))
+        return super(LT, LT).data_type(operators.lt(a, b))
 
     @staticmethod
     def backward(ctx, d_output):
@@ -276,7 +276,7 @@ class EQ(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a, b):
-        return float(operators.eq(a, b))
+        return super(EQ, EQ).data_type(operators.eq(a, b))
 
     @staticmethod
     def backward(ctx, d_output):
