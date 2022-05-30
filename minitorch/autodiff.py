@@ -68,7 +68,7 @@ class Variable:
 
     def accumulate_derivative(self, val):
         """
-        Add `val` to the the derivative accumulated on this variable.
+        Add `val` to the derivative accumulated on this variable.
         Should only be called during autodifferentiation on leaf variables.
 
         Args:
@@ -92,7 +92,7 @@ class Variable:
         self.zero_derivative_()
 
     def expand(self, x):
-        "Placeholder for tensor variables"
+        """Placeholder for tensor variables"""
         return x
 
     # Helper functions for children classes.
@@ -106,19 +106,22 @@ class Variable:
     def zeros(self):
         return 0.0
 
+    def get_data(self):
+        pass
+
 
 # Some helper functions for handling optional tuples.
 
 
 def wrap_tuple(x):
-    "Turn a possible value into a tuple"
+    """Turn a possible value into a tuple"""
     if isinstance(x, tuple):
         return x
     return (x,)
 
 
 def unwrap_tuple(x):
-    "Turn a singleton tuple into a value"
+    """Turn a singleton tuple into a value"""
     if len(x) == 1:
         return x[0]
     return x
@@ -203,6 +206,20 @@ class FunctionBase:
 
     """
 
+    data_type = None
+
+    @staticmethod
+    def forward(ctx, *inputs):
+        raise NotImplementedError
+
+    @staticmethod
+    def backward(ctx, d_out):
+        raise NotImplementedError
+
+    @staticmethod
+    def data(x):
+        raise NotImplementedError
+
     @staticmethod
     def variable(raw, history):
         # Implement by children class.
@@ -273,8 +290,11 @@ class FunctionBase:
         """
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
-        # TODO: Implement for Task 1.3.
-        raise NotImplementedError('Need to implement for Task 1.3')
+        variables = inputs
+        derivatives = cls.backward(ctx, d_output)
+        var_derivatives = [(var, derivative) for (var, derivative) in zip(variables, derivatives)
+                           if not is_constant(var)]
+        return var_derivatives
 
 
 # Algorithms for backpropagation
