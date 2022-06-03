@@ -1,3 +1,7 @@
+from abc import ABC
+from collections.abc import Iterable
+from typing import List
+
 variable_count = 1
 
 
@@ -63,7 +67,7 @@ class Variable:
         return self._derivative
 
     def is_leaf(self):
-        "True if this variable created by the user (no `last_fn`)"
+        """True if this variable created by the user (no `last_fn`)"""
         return self.history.last_fn is None
 
     def accumulate_derivative(self, val):
@@ -193,11 +197,15 @@ class History:
         Returns:
             list of numbers : a derivative with respect to `inputs`
         """
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        if self.last_fn is None:
+            return d_output
+        var_derivatives = self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
+        # return [deriv for var, deriv in var_derivatives]
+        # TODO: Make sure the return type is right
+        return var_derivatives
 
 
-class FunctionBase:
+class FunctionBase(ABC):
     """
     A function that can act on :class:`Variable` arguments to
     produce a :class:`Variable` output, while tracking the internal history.
@@ -271,6 +279,8 @@ class FunctionBase:
         back = None
         if need_grad:
             back = History(cls, ctx, vals)
+        else:
+            print(vals, [val.history for val in vals if isinstance(val, Variable)])
         return cls.variable(cls.data(c), back)
 
     @classmethod
@@ -290,8 +300,9 @@ class FunctionBase:
         """
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
-        variables = inputs
         derivatives = cls.backward(ctx, d_output)
+        derivatives = derivatives if isinstance(derivatives, Iterable) else (derivatives,)
+        variables = inputs if isinstance(inputs, Iterable) else (inputs,)
         var_derivatives = [(var, derivative) for (var, derivative) in zip(variables, derivatives)
                            if not is_constant(var)]
         return var_derivatives
@@ -304,7 +315,7 @@ def is_constant(val):
     return not isinstance(val, Variable) or val.history is None
 
 
-def topological_sort(variable):
+def topological_sort(variable: Variable) -> List[Variable]:
     """
     Computes the topological order of the computation graph.
 
@@ -315,8 +326,22 @@ def topological_sort(variable):
         list of Variables : Non-constant Variables in topological order
                             starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    variables = []
+    visited = set()
+
+    def visit(var: Variable):
+        if is_constant(var):
+            return
+        if var.unique_id in visited:
+            return
+        visited.add(var.unique_id)
+        if var.history and var.history.inputs:
+            for child_var in var.history.inputs:
+                visit(child_var)
+        variables.append(var)
+
+    visit(variable)
+    return variables[::-1]
 
 
 def backpropagate(variable, deriv):
@@ -332,5 +357,12 @@ def backpropagate(variable, deriv):
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    sorted_values = topological_sort(variable)
+    var_derivative_map = {variable.unique_id: deriv}
+    for var in sorted_values:
+        if var.is_leaf():
+            var.accumulate_derivative(var_derivative_map[var.unique_id])
+        else:
+            var_derivatives = var.history.backprop_step(var_derivative_map[var.unique_id])
+            for _var, _derivative in var_derivatives:
+                var_derivative_map[_var.unique_id] = var_derivative_map.get(_var.unique_id, 0) + _derivative

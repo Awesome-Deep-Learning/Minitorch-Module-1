@@ -75,7 +75,8 @@ def test_two_args(fn, t1, t2):
 @pytest.mark.task1_4
 @pytest.mark.parametrize("fn", one_arg)
 def test_one_derivative(fn, t1):
-    name, _, scalar_fn = fn
+    # name, _, scalar_fn = fn
+    scalar_fn = MathTestVariable.complex
     derivative_check(scalar_fn, t1)
 
 

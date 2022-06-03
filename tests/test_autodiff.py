@@ -99,6 +99,7 @@ def test_chain_rule4():
 
 
 @pytest.mark.task1_4
+@pytest.mark.test_backprop
 def test_backprop1():
     # Example 1: F1(0, v)
     var = minitorch.Scalar(0)
@@ -108,6 +109,7 @@ def test_backprop1():
 
 
 @pytest.mark.task1_4
+@pytest.mark.test_backprop
 def test_backprop2():
     # Example 2: F1(0, 0)
     var = minitorch.Scalar(0)
@@ -118,6 +120,7 @@ def test_backprop2():
 
 
 @pytest.mark.task1_4
+@pytest.mark.test_backprop
 def test_backprop3():
     # Example 3: F1(F1(0, v1), F1(0, v1))
     var1 = minitorch.Scalar(0)
@@ -129,6 +132,7 @@ def test_backprop3():
 
 
 @pytest.mark.task1_4
+@pytest.mark.test_backprop
 def test_backprop4():
     # Example 4: F1(F1(0, v1), F1(0, v1))
     var0 = minitorch.Scalar(0)
