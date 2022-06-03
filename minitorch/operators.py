@@ -15,6 +15,10 @@ def mul(x, y):
     return x * y
 
 
+def mul_back(x, y, d):
+    return d * y, d * x
+
+
 def id(x):
     """:math:`f(x) = x`"""
     return x
@@ -28,6 +32,11 @@ def add(x, y):
 def neg(x):
     """:math:`f(x) = -x`"""
     return -x
+
+
+def neg_back(d):
+    """:math:`f(x) = -x`"""
+    return -d
 
 
 def lt(x, y):
@@ -74,6 +83,22 @@ def sigmoid(x):
     return 1 / (1 + math.exp(-x)) if x >= 0 else math.exp(x) / (1 + math.exp(x))
 
 
+def sigmoid_back(x, d):
+    r"""
+    If :math:`f(x) =  \frac{1.0}{(1.0 + e^{-x})}` compute d :math:`d \times f'(x)`
+
+    (See `<https://en.wikipedia.org/wiki/Sigmoid_function>`_ .)
+
+    Args:
+        x (float): input
+        d (float): derivative
+
+    Returns:
+        float : sigmoid value
+    """
+    return d * sigmoid(x) * (1 - sigmoid(x))
+
+
 def relu(x):
     """
     :math:`f(x) =` x if x is greater than 0, else 0
@@ -89,12 +114,9 @@ def relu(x):
     return x if x > 0 else 0
 
 
-EPS = 1e-6
-
-
 def log(x):
     """:math:`f(x) = log(x)`"""
-    return math.log(x + EPS)
+    return math.log(x)
 
 
 def exp(x):
@@ -102,19 +124,24 @@ def exp(x):
     return math.exp(x)
 
 
+def exp_back(x, d):
+    r"""If :math:`f = exp` compute d :math:`d \times f'(x)`"""
+    return d * exp(x)
+
+
 def log_back(x, d):
     r"""If :math:`f = log` as above, compute d :math:`d \times f'(x)`"""
-    return d / (x + EPS)
+    return d / (x)
 
 
 def inv(x):
     """:math:`f(x) = 1/x`"""
-    return 1 / (x + EPS)
+    return 1 / x
 
 
 def inv_back(x, d):
     r"""If :math:`f(x) = 1/x` compute d :math:`d \times f'(x)`"""
-    return -d / (x ** 2 + EPS)
+    return -d / x ** 2
 
 
 def relu_back(x, d):
