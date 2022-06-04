@@ -279,8 +279,6 @@ class FunctionBase(ABC):
         back = None
         if need_grad:
             back = History(cls, ctx, vals)
-        else:
-            print(vals, [val.history for val in vals if isinstance(val, Variable)])
         return cls.variable(cls.data(c), back)
 
     @classmethod
